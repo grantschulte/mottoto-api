@@ -17,4 +17,11 @@ router.delete("/users/:handle", users.remove);
  * Mottos
  */
 
+
+router.get("*", (req, res, next) => {
+  let error = new Error();
+  error.status = 404;
+  next(error);
+});
+
 module.exports = router;

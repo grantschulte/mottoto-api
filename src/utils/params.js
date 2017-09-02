@@ -5,7 +5,7 @@ function createUpdateObject(allowed, body) {
 
   let updateParams = {};
 
-  for (p in body) {
+  for (let p in body) {
     if (body.hasOwnProperty(p) && allowed.indexOf(p) >= 0) {
       console.log("ALLOWED", p);
       updateParams[p] = body[p];

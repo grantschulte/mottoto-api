@@ -45,9 +45,9 @@ function get(req, res, next) {
 
 function create(req, res, next) {
   let user = new User({
-    _id: new mongoose.Types.ObjectId(),
     email: req.body.email,
-    handle: req.body.handle
+    handle: req.body.handle,
+    password: req.body.password
   });
 
   user.save((error, user) => {

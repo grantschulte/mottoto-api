@@ -16,6 +16,7 @@ app.use(morgan("tiny"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+
 // Routes & Handlers
 
 app.use("/", routes);

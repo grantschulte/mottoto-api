@@ -9,19 +9,18 @@ function log(error, req, res, next) {
 
 function clientErrorHandler (error, req, res, next) {
   if (req.xhr) {
-    res.status(500).send({ error: "Request failed." });
+    res.status(500).send({ errors: "Request failed." });
   } else {
     next(error);
   }
 }
 
 function globalErrorHandler (error, req, res, next) {
-  res.status(500);
-  res.json({ error });
+  res.status(500).send(error);
 }
 
 module.exports = {
   log,
   clientErrorHandler,
   globalErrorHandler
-}
+};

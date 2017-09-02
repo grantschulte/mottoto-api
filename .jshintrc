@@ -1,8 +1,10 @@
 {
   "browser": false,
   "curly": true,
+  "esversion": 6,
+  "node": true,
   "undef": true,
-  "unused": true,
+  "unused": false,
   "quotmark": "double",
   "globals": {}
 }
