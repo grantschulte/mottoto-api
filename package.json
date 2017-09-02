@@ -1,0 +1,19 @@
+{
+  "name": "mottoto-api",
+  "version": "0.0.1",
+  "description": "JSON API for Mottoto App",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Grant J. Schulte <schulte.grant@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4",
+    "jshint": "^2.9.5",
+    "mongoose": "^4.11.9",
+    "morgan": "^1.8.2"
+  }
+}

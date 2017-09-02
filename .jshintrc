@@ -1,0 +1,8 @@
+{
+  "browser": false,
+  "curly": true,
+  "undef": true,
+  "unused": true,
+  "quotmark": "double",
+  "globals": {}
+}
