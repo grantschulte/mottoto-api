@@ -21,7 +21,7 @@ describe("Users", () => {
   // GET /users
 
   describe("GET /users", () => {
-    it("it should GET all users.", done => {
+    it("It should GET all users.", done => {
       chai.request(server)
         .get("/users")
         .end((error, res) => {
@@ -36,7 +36,7 @@ describe("Users", () => {
   // POST /users
 
   describe("POST /users", () => {
-    it("it should POST a user.", done => {
+    it("It should POST a user.", done => {
       let user = {
         email: "picard@enterprise.com",
         handle: "cptPicard",
@@ -57,7 +57,7 @@ describe("Users", () => {
         });
     });
 
-    it("it should not POST a user without a password.", done => {
+    it("It should not POST a user without a password.", done => {
       let user = {
         email: "picard@enterprise.com",
         handle: "cptPicard"
@@ -78,7 +78,7 @@ describe("Users", () => {
   // GET /users/:handle
 
   describe("GET /users/:handle", () => {
-    it("it should GET a user with the provided handle.", done => {
+    it("It should GET a user with the provided handle.", done => {
       let user = new User({
         email: "picard@enterprise.com",
         handle: "cptPicard",
@@ -114,13 +114,79 @@ describe("Users", () => {
 
   // PUT user
 
-  // describe("/PUT user", done => {
-  //
-  // });
+  describe("/PUT user", done => {
+    it("It should UPDATE a user.", done => {
+      let user = new User({
+        email: "picard@enterprise.com",
+        handle: "cptPicard",
+        password: "risa"
+      });
+
+      user.save((error, user) => {
+        let motto = new Motto({
+          text: "",
+          user: user._id
+        });
+
+        motto.save((error, motto) => {
+          user.motto = motto._id;
+
+          user.save((error, user) => {
+            let payload = {
+              email: "locutis@borg.com",
+              handle: "locutisOfBorg",
+              password: "borg"
+            };
+
+            chai.request(server)
+              .put("/users/" + user.handle)
+              .send(payload)
+              .end((error, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a("object");
+                res.body.should.have.property("email").eql("locutis@borg.com");
+                res.body.should.have.property("handle").eql("locutisOfBorg");
+                res.body.should.have.property("password").eql("borg");
+                done();
+              });
+          });
+        });
+      });
+    });
+  });
 
   // DELETE user
 
-  // describe("/DELETE user", done => {
-  //
-  // });
+  describe("/DELETE user", done => {
+    it("It should delete a user.", done => {
+      let user = new User({
+        email: "picard@enterprise.com",
+        handle: "cptPicard",
+        password: "risa"
+      });
+
+      user.save((error, user) => {
+        let motto = new Motto({
+          text: "",
+          user: user._id
+        });
+
+        motto.save((error, motto) => {
+          user.motto = motto._id;
+
+          user.save((error, user) => {
+            chai.request(server)
+              .delete("/users/" + user.handle)
+              .end((error, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a("object");
+                res.body.should.have.property('ok').eql(1);
+                res.body.should.have.property('n').eql(1);
+                done();
+              });
+          });
+        });
+      });
+    });
+  });
 });

@@ -92,7 +92,7 @@ function create(req, res, next) {
  */
 
 function update(req, res, next) {
-  const allowed = ["handle", "email"];
+  const allowed = ["email", "handle", "password"];
   const findBy = { handle: req.params.handle };
   const updateParams = params.createUpdateObject(allowed, req.body);
 
@@ -114,14 +114,12 @@ function update(req, res, next) {
  */
 
 function remove(req, res, next) {
-  User.remove({
-    handle: req.params.handle
-  }, (error, user) => {
+  User.remove({ handle: req.params.handle }, (error, result) => {
     if (error) {
       return next(error);
     }
 
-    res.json(user);
+    res.json(result);
   });
 }
 
