@@ -1,27 +1,13 @@
-const express = require("express");
-const app = express();
-const path = require("path");
+const User = require("./model");
+const Motto = require("../mottos/model");
 const mongoose = require("mongoose");
-const port = process.env.PORT || 5000;
-const bodyParser = require("body-parser");
-const morgan = require("morgan");
+const params = require("../../utils/params");
 
-const User = require("./routes/users/model");
-const Motto = require("./routes/mottos/model");
+/*
+ * Index
+ */
 
-app.use(morgan("tiny"));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-mongoose.connect("mongodb://localhost/mottoto")
-  .then(() => {
-    console.log(`Database connected`);
-  })
-  .catch((error) => {
-    console.log(`Database connection error`, error);
-  });
-
-app.get("/users", (req, res) => {
+function index(req, res, next) {
   User.find({})
     .populate("motto")
     .exec((error, users) => {
@@ -31,21 +17,33 @@ app.get("/users", (req, res) => {
 
       res.json(users);
     });
-});
+}
 
-app.get("/users/:handle", (req, res) => {
+/*
+ * Get
+ */
+
+function get(req, res, next) {
   User.findOne({ handle: req.params.handle })
     .populate("motto")
     .exec((error, user) => {
+      if (!user) {
+        return res.status("404").send("User not found.");
+      }
+
       if (error) {
         return next(error);
       }
 
       res.json(user);
     });
-});
+}
 
-app.post("/users", (req, res, error) => {
+/*
+ * Create
+ */
+
+function create(req, res, next) {
   let user = new User({
     _id: new mongoose.Types.ObjectId(),
     email: req.body.email,
@@ -59,7 +57,7 @@ app.post("/users", (req, res, error) => {
 
     let motto = new Motto({
       _id: new mongoose.Types.ObjectId(),
-      text: "Sup",
+      text: "",
       user: user._id
     });
 
@@ -87,18 +85,44 @@ app.post("/users", (req, res, error) => {
       });
     })
   });
-});
+}
 
-app.get("/mottos", (req, res, error) => {
-  Motto.find({}, (error, mottos) => {
+/*
+ * Update
+ */
+
+function update(req, res, next) {
+  const allowed = ["handle", "email"];
+  const findBy = { handle: req.params.handle };
+  const updateParams = params.createUpdateObject(allowed, req.body);
+
+  User.findOneAndUpdate(findBy, updateParams, { new: true }, (error, user) => {
+    if (!user) {
+      return res.status("404").send("User not found.");
+    }
+
     if (error) {
       return next(error);
     }
 
-    res.json(mottos);
+    res.json(user);
   })
-});
+}
 
-app.listen(port, () => {
-  console.log(`App listening on ${port}`);
-});
+/*
+ * Delete
+ */
+
+function remove(req, res, next) {
+  User.remove({
+    handle: req.params.handle
+  }, (error, user) => {
+    if (error) {
+      return next(error);
+    }
+
+    res.json(user);
+  });
+}
+
+module.exports = { create, get, index, remove, update };
