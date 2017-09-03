@@ -4,12 +4,8 @@ const dbUri = () => {
       return `mongodb://localhost/mottoto-test`;
       break;
 
-    case "staging":
-      return process.env.MONGODB_URI;
-      break;
-
     case "production":
-      return provess.env.MONGODB_URI;
+      return process.env.MONGODB_URI;
       break;
 
     default:
