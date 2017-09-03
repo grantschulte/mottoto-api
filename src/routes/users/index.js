@@ -28,7 +28,9 @@ function get(req, res, next) {
     .populate("motto")
     .exec((error, user) => {
       if (!user) {
-        return res.status("404").send("User not found.");
+        let error = new Error("User not found.");
+        error.status = 404;
+        return next(error);
       }
 
       if (error) {
@@ -100,7 +102,7 @@ function update(req, res, next) {
   User.findOneAndUpdate(findBy, updateProperties, returnNew,
     (error, user) => {
       if (!user) {
-        let error = new Error("Motto not found.");
+        let error = new Error("User not found.");
         error.status = 404;
         return next(error);
       }
