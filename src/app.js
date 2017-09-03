@@ -1,11 +1,19 @@
 const app         = require("express")();
-const config      = require("dotenv").config();
-const mongoose    = require("mongoose");
 const bodyParser  = require("body-parser");
+const config      = require("dotenv").config();
+const cors        = require("cors");
+const mongoose    = require("mongoose");
 const morgan      = require("morgan");
+
 const db          = require("./database");
 const routes      = require("./routes");
 const errors      = require("./utils/errors");
+
+const whitelist   = require("../config").getCorsWhitelist();
+
+// CORS
+
+app.use(cors({ origin: whitelist.getCorsW }));
 
 // Logging
 

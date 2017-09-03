@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const config = require("../config");
-const dbUri = config.dbUri();
+const dbUri = config.getMongoUri();
 
 // Use global Promise object with mongoose.
 
