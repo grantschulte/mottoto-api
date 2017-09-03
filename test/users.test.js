@@ -2,10 +2,10 @@ process.env.NODE_ENV = "test";
 
 const chai = require("chai");
 const chaiHttp = require("chai-http");
-const server = require("../server");
-const should = chai.should();
-
 const mongoose = require("mongoose");
+const should = chai.should();
+const server = require("../server");
+
 const User = require("../src/routes/users/model");
 const Motto = require("../src/routes/mottos/model");
 

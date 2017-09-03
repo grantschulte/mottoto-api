@@ -12,10 +12,16 @@ const db = mongoose.connect(dbUri, {
   useMongoClient: true
 });
 
-db.then((db) => {
-  console.log("Database connected at:", dbUri);
-}).catch((error) => {
-  console.log("Error establishing connection to database.");
+db.on("connected", () => {
+  console.log("Database connected at ", dbUri);
+});
+
+db.on("disconnected", () => {
+  console.log("Database connection closed.");
+});
+
+db.on("error", () => {
+  console.log("Database connection error.");
 });
 
 module.exports = db;

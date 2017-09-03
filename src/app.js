@@ -5,7 +5,7 @@ const cors        = require("cors");
 const mongoose    = require("mongoose");
 const morgan      = require("morgan");
 
-const db          = require("./database");
+const db          = require("../database");
 const routes      = require("./routes");
 const errors      = require("./utils/errors");
 

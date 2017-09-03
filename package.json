@@ -3,13 +3,6 @@
   "version": "0.0.1",
   "description": "JSON API for the Elm Mottoto App",
   "main": "server.js",
-  "scripts": {
-    "api": "nodemon ./server.js --exec 'npm run lint && node'",
-    "deploy:staging": "git push staging master",
-    "lint": "jshint --reporter=node_modules/jshint-stylish ./src/**/*.js",
-    "start": "nf start",
-    "test": "mocha --timeout 10000"
-  },
   "author": "Grant J. Schulte <schulte.grant@gmail.com>",
   "license": "MIT",
   "dependencies": {
@@ -26,6 +19,15 @@
     "mongoose": "^4.11.9",
     "morgan": "^1.8.2",
     "nodemon": "^1.11.0"
+  },
+  "scripts": {
+    "api": "nodemon ./server.js --exec 'npm run lint && node'",
+    "db:clean": "node ./database/clean.js",
+    "db:seed": "node ./database/seed.js",
+    "deploy:staging": "git push staging master",
+    "lint": "jshint --reporter=node_modules/jshint-stylish ./src/**/*.js",
+    "start": "nf start",
+    "test": "mocha --timeout 10000"
   },
   "engines": {
     "node": "6.11.2"
