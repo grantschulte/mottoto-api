@@ -22,14 +22,32 @@ function clientErrorHandler (error, req, res, next) {
 function globalErrorHandler (error, req, res, next) {
   res.status(error.status || 500);
 
-  if (error.status === 404) {
-    res.json({
-      message: error.message,
-      status: error.status
-    });
-  } else {
-    res.json(error);
+  let response = error;
+
+  switch (error.status) {
+    case 404:
+      response = {
+        message: error.message,
+        status: error.status
+      };
+      break;
+
+    case 409:
+      response = {
+        message: error.message,
+        status: error.status
+      };
+      break;
+
+    case 500:
+      response = error;
+      break;
+
+    default:
+      response = error;
   }
+
+  res.json(response);
 }
 
 module.exports = {

@@ -46,46 +46,64 @@ function get(req, res, next) {
  */
 
 function create(req, res, next) {
-  let user = new User({
-    email: req.body.email,
-    handle: req.body.handle,
-    password: req.body.password
-  });
+  User.findOne({ $or: [
+    { handle: req.body.handle },
+    { email: req.body.email }
+  ]}, (error, user) => {
+    if (user) {
 
-  user.save((error, user) => {
-    if (error) {
+      // If user exists, respond with 409 and and notify user.
+
+      const error = new Error("Username or email already exists.");
+      error.status = 409;
       return next(error);
-    }
 
-    let motto = new Motto({
-      _id: new mongoose.Types.ObjectId(),
-      text: "",
-      user: user._id
-    });
+    } else {
 
-    motto.save((error, motto) => {
-      if (error) {
-        return next(error);
-      }
+      // Create a new user if username or email does not exist on a user.
 
-      user.motto = motto._id;
+      let user = new User({
+        email: req.body.email,
+        handle: req.body.handle,
+        password: req.body.password
+      });
 
       user.save((error, user) => {
         if (error) {
           return next(error);
         }
 
-        User.findOne(user)
-          .populate("motto")
-          .exec((error, user) => {
+        let motto = new Motto({
+          _id: new mongoose.Types.ObjectId(),
+          text: "",
+          user: user._id
+        });
+
+        motto.save((error, motto) => {
+          if (error) {
+            return next(error);
+          }
+
+          user.motto = motto._id;
+
+          user.save((error, user) => {
             if (error) {
               return next(error);
             }
 
-            res.json(user);
+            User.findOne(user)
+              .populate("motto")
+              .exec((error, user) => {
+                if (error) {
+                  return next(error);
+                }
+
+                res.json(user);
+              });
           });
+        })
       });
-    })
+    }
   });
 }
 
