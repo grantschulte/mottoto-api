@@ -139,7 +139,7 @@ describe("Users", () => {
             };
 
             chai.request(server)
-              .put("/users/" + user.handle)
+              .put(`/users/${user.handle}`)
               .send(payload)
               .end((error, res) => {
                 res.should.have.status(200);

@@ -94,19 +94,24 @@ function create(req, res, next) {
 function update(req, res, next) {
   const allowed = ["email", "handle", "password"];
   const findBy = { handle: req.params.handle };
-  const updateParams = params.createUpdateObject(allowed, req.body);
+  const updateProperties = params.createUpdateObject(allowed, req.body);
+  const returnNew = { new: true };
 
-  User.findOneAndUpdate(findBy, updateParams, { new: true }, (error, user) => {
-    if (!user) {
-      return res.status("404").send("User not found.");
+  User.findOneAndUpdate(findBy, updateProperties, returnNew,
+    (error, user) => {
+      if (!user) {
+        let error = new Error("Motto not found.");
+        error.status = 404;
+        return next(error);
+      }
+
+      if (error) {
+        return next(error);
+      }
+
+      res.json(user);
     }
-
-    if (error) {
-      return next(error);
-    }
-
-    res.json(user);
-  })
+  );
 }
 
 /*

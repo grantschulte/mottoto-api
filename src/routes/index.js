@@ -1,6 +1,8 @@
-const express = require("express");
-const router = express.Router();
+const app = require("express");
+const router = app.Router();
+
 const users = require("./users");
+const mottos = require("./mottos");
 
 /*
  * Users
@@ -17,9 +19,15 @@ router.delete("/users/:handle", users.remove);
  * Mottos
  */
 
+router.get("/mottos", mottos.index);
+router.put("/mottos/:id", mottos.update);
 
-router.get("*", (req, res, next) => {
-  let error = new Error();
+/*
+ * Catch All
+ */
+
+router.all("*", (req, res, next) => {
+  let error = new Error("Page not found.");
   error.status = 404;
   next(error);
 });
