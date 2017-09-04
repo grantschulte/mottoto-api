@@ -25,6 +25,13 @@ function globalErrorHandler(error, req, res, next) {
   let response = error;
 
   switch (error.status) {
+    case 401:
+      response = {
+        message: error.message,
+        status: error.status
+      };
+      break;
+
     case 404:
       response = {
         message: error.message,
@@ -32,7 +39,7 @@ function globalErrorHandler(error, req, res, next) {
       };
       break;
 
-    case 401:
+    case 403:
       response = {
         message: error.message,
         status: error.status

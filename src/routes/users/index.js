@@ -2,6 +2,7 @@ const User = require("./model");
 const Motto = require("../mottos/model");
 const mongoose = require("mongoose");
 const params = require("../../utils/params");
+const authUtils = require("../../utils/auth");
 
 /*
  * Index
@@ -95,29 +96,32 @@ function create(req, res, next) {
 
 function update(req, res, next) {
   const allowed = ["email", "handle", "password"];
-  const findBy = { handle: req.params.handle };
-  const updateProperties = params.createUpdateObject(allowed, req.body);
   const options = {
     context: "query", // Needed to run uniqueValidator on update.
     new: true,
     runValidators: true // Needed to run uniqueValidator on update.
   };
+  const handle = req.decoded.handle;
+  const updateProperties = params.createUpdateObject(allowed, req.body);
 
-  User.findOneAndUpdate(findBy, updateProperties, options,
-    (error, user) => {
-      if (!user) {
-        let error = new Error("User not found.");
-        error.status = 404;
-        return next(error);
-      }
-
-      if (error) {
-        return next(error);
-      }
-
-      res.json(user);
+  User.findOneAndUpdate({ handle }, updateProperties, options)
+    .populate("motto")
+    .exec((error, user) => {
+    if (!user) {
+      let error = new Error("User not found.");
+      error.status = 404;
+      return next(error);
     }
-  );
+
+    if (error) {
+      return next(error);
+    }
+
+    const cleanUser = authUtils.getCleanUser(user);
+    const token = authUtils.createToken(cleanUser);
+    const authUserResponse = authUtils.getAuthUserResponse(user, token);
+    res.json(authUserResponse);
+  });
 }
 
 /*
@@ -125,7 +129,9 @@ function update(req, res, next) {
  */
 
 function remove(req, res, next) {
-  User.remove({ handle: req.params.handle }, (error, result) => {
+  const handle = req.decoded.handle;
+
+  User.remove({ handle }, (error, result) => {
     if (error) {
       return next(error);
     }

@@ -6,7 +6,8 @@ const mongoose    = require("mongoose");
 const morgan      = require("morgan");
 
 const db          = require("../database");
-const routes      = require("./routes");
+const apiRoutes   = require("./routes").apiRoutes;
+const routes      = require("./routes").routes;
 const errors      = require("./utils/errors");
 
 const whitelist   = require("../config").getCorsWhitelist();
@@ -28,6 +29,7 @@ app.use(bodyParser.json());
 // Routes & Handlers
 
 app.use("/", routes);
+app.use("/api", apiRoutes);
 
 // Error Handling
 

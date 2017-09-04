@@ -40,4 +40,28 @@ function createToken(cleanUser) {
   });
 }
 
-module.exports = { createToken, getAuthUserResponse, getCleanUser };
+function checkForAccessToken(req, res, next) {
+  const token = req.body.token || req.query.token || req.headers["x-access-token"];
+
+  if (token) {
+    jwt.verify(token, process.env.SECRET, (error, decoded) => {
+      if (error) {
+        return next(error);
+      } else {
+        req.decoded = decoded;
+        next();
+      }
+    });
+  } else {
+    let error = "No token provided.";
+    error.status = 403;
+    return next(error);
+  }
+}
+
+module.exports = {
+  checkForAccessToken,
+  createToken,
+  getAuthUserResponse,
+  getCleanUser
+};

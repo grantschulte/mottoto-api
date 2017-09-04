@@ -2,14 +2,19 @@ process.env.NODE_ENV = "test";
 
 const chai = require("chai");
 const chaiHttp = require("chai-http");
+const chaiJwt = require("chai-jwt");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-const should = chai.should();
-const server = require("../server");
 
+const server = require("../server");
+const authUtils = require("../src/utils/auth");
 const User = require("../src/routes/users/model");
 const Motto = require("../src/routes/mottos/model");
 
 chai.use(chaiHttp);
+chai.use(chaiJwt);
+const should = chai.should();
+const expect = chai.expect;
 
 describe("Users", () => {
   beforeEach((done) => {
@@ -18,126 +23,10 @@ describe("Users", () => {
     });
   });
 
-  // GET /users
-
-  describe("GET /users", () => {
-    it("It should GET all users.", done => {
-      chai.request(server)
-        .get("/users")
-        .end((error, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a("array");
-          res.body.length.should.be.eql(0);
-          done();
-        });
-    });
-  });
-
-  // POST /users
-
-  describe("POST /users", () => {
-    it("It should POST a user.", done => {
-      let user = {
-        email: "picard@enterprise.com",
-        handle: "cptPicard",
-        password: "risa"
-      };
-
-      chai.request(server)
-        .post("/users")
-        .send(user)
-        .end((error, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a("object");
-          res.body.should.have.property("handle").eql("cptPicard");
-          res.body.should.have.property("email").eql("picard@enterprise.com");
-          res.body.motto.should.be.a("object");
-          res.body.motto.should.have.property("text");
-          done();
-        });
-    });
-
-    it("It should not POST a user without a password.", done => {
-      let user = {
-        email: "picard@enterprise.com",
-        handle: "cptPicard"
-      };
-
-      chai.request(server)
-        .post("/users")
-        .send(user)
-        .end((error, res) => {
-          res.should.have.status(500);
-          res.body.should.have.property("errors");
-          res.body.errors.should.have.property("password");
-          done();
-        });
-    });
-
-    it("It should not POST a user with an already registered email or handle.", done => {
-      let user = new User({
-        email: "picard@enterprise.com",
-        handle: "cptPicard",
-        password: "risa"
-      });
-
-      user.save((error, user) => {
-        chai.request(server)
-          .post(`/users`)
-          .send({ email: user.email, handle: user.handle, password: "risa" })
-          .end((error, res) => {
-            res.should.have.status(500);
-            res.body.should.be.a("object");
-            res.body.should.have.property("errors");
-            res.body.errors.should.have.property("email");
-            res.body.errors.should.have.property("handle");
-            done();
-          });
-      });
-    });
-  });
-
-  // GET /users/:handle
-
-  describe("GET /users/:handle", () => {
-    it("It should GET a user with the provided handle.", done => {
-      let user = new User({
-        email: "picard@enterprise.com",
-        handle: "cptPicard",
-        password: "risa"
-      });
-
-      user.save((error, user) => {
-        let motto = new Motto({
-          text: "",
-          user: user._id
-        });
-
-        motto.save((error, motto) => {
-          user.motto = motto._id;
-
-          user.save((error, user) => {
-            chai.request(server)
-              .get("/users/" + user.handle)
-              .end((error, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a("object");
-                res.body.should.have.property("handle").eql("cptPicard");
-                res.body.should.have.property("email").eql("picard@enterprise.com");
-                res.body.motto.should.be.a("object");
-                res.body.motto.should.have.property("text");
-                done();
-              });
-          });
-        });
-      });
-    });
-  });
-
   // PUT user
 
   describe("/PUT user", done => {
-    it("It should UPDATE a user.", done => {
+    it("It should update a user using a json web token.", done => {
       let user = new User({
         email: "picard@enterprise.com",
         handle: "cptPicard",
@@ -154,21 +43,23 @@ describe("Users", () => {
           user.motto = motto._id;
 
           user.save((error, user) => {
-            let payload = {
-              email: "locutis@borg.com",
-              handle: "locutisOfBorg",
-              password: "borg"
-            };
+            const cleanUser = authUtils.getCleanUser(user);
+            const token = authUtils.createToken(cleanUser);
 
             chai.request(server)
-              .put(`/users/${user.handle}`)
-              .send(payload)
+              .put(`/api/users`)
+              .set("x-access-token", token)
+              .send({ email: "locutis@borg.com", handle: "locutisOfBorg" })
               .end((error, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a("object");
+                res.body.should.have.property("id");
                 res.body.should.have.property("email").eql("locutis@borg.com");
                 res.body.should.have.property("handle").eql("locutisOfBorg");
-                res.body.should.have.property("password").eql("borg");
+                res.body.should.have.property("motto");
+                res.body.should.have.property("token");
+                expect(res.body.token).to.be.a.jwt;
+                expect(res.body.token).to.be.signedWith(process.env.SECRET);
                 done();
               });
           });
@@ -180,7 +71,7 @@ describe("Users", () => {
   // DELETE user
 
   describe("/DELETE user", done => {
-    it("It should delete a user.", done => {
+    it("It should delete a user using a json web token.", done => {
       let user = new User({
         email: "picard@enterprise.com",
         handle: "cptPicard",
@@ -197,8 +88,12 @@ describe("Users", () => {
           user.motto = motto._id;
 
           user.save((error, user) => {
+            const cleanUser = authUtils.getCleanUser(user);
+            const token = authUtils.createToken(cleanUser);
+
             chai.request(server)
-              .delete("/users/" + user.handle)
+              .delete("/api/users")
+              .set("x-access-token", token)
               .end((error, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a("object");
