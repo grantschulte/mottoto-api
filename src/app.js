@@ -14,7 +14,8 @@ const whitelist   = require("../config").getCorsWhitelist();
 
 // CORS
 
-app.use(cors({ origin: whitelist.getCorsW }));
+// app.use(cors({ origin: whitelist }));
+app.use(cors());
 
 // Logging
 

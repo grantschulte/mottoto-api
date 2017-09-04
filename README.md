@@ -37,8 +37,8 @@ then push to Heroku with `yarn deploy:staging` as long as your staging remote
 is set to the Heroku git endpoint for this project.
 
 ## Tests
-Mocha and chai are used as to test this project. The tests should cover every
-available endpoint.
+Mocha and Chai are used to test the routes. The tests should cover every publicly
+accessible route.
 ```
 yarn test
 ```

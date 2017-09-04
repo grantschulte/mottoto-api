@@ -26,6 +26,7 @@ routes.post("/auth/refresh", auth.refresh);
 // Authors
 
 routes.get("/authors", authors.index);
+routes.get("/authors/:handle", authors.get);
 
 /*
  * API Routes
