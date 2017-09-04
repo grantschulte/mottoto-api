@@ -73,6 +73,28 @@ describe("Users", () => {
           done();
         });
     });
+
+    it("It should not POST a user with an already registered email or handle.", done => {
+      let user = new User({
+        email: "picard@enterprise.com",
+        handle: "cptPicard",
+        password: "risa"
+      });
+
+      user.save((error, user) => {
+        chai.request(server)
+          .post(`/users`)
+          .send({ email: user.email, handle: user.handle, password: "risa" })
+          .end((error, res) => {
+            res.should.have.status(500);
+            res.body.should.be.a("object");
+            res.body.should.have.property("errors");
+            res.body.errors.should.have.property("email");
+            res.body.errors.should.have.property("handle");
+            done();
+          });
+      });
+    });
   });
 
   // GET /users/:handle

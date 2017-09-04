@@ -46,64 +46,46 @@ function get(req, res, next) {
  */
 
 function create(req, res, next) {
-  User.findOne({ $or: [
-    { handle: req.body.handle },
-    { email: req.body.email }
-  ]}, (error, user) => {
-    if (user) {
+  let user = new User({
+    email: req.body.email,
+    handle: req.body.handle,
+    password: req.body.password
+  });
 
-      // If user exists, respond with 409 and and notify user.
-
-      const error = new Error("Username or email already exists.");
-      error.status = 409;
+  user.save((error, user) => {
+    if (error) {
       return next(error);
+    }
 
-    } else {
+    let motto = new Motto({
+      _id: new mongoose.Types.ObjectId(),
+      text: "",
+      user: user._id
+    });
 
-      // Create a new user if username or email does not exist on a user.
+    motto.save((error, motto) => {
+      if (error) {
+        return next(error);
+      }
 
-      let user = new User({
-        email: req.body.email,
-        handle: req.body.handle,
-        password: req.body.password
-      });
+      user.motto = motto._id;
 
       user.save((error, user) => {
         if (error) {
           return next(error);
         }
 
-        let motto = new Motto({
-          _id: new mongoose.Types.ObjectId(),
-          text: "",
-          user: user._id
-        });
-
-        motto.save((error, motto) => {
-          if (error) {
-            return next(error);
-          }
-
-          user.motto = motto._id;
-
-          user.save((error, user) => {
+        User.findOne(user)
+          .populate("motto")
+          .exec((error, user) => {
             if (error) {
               return next(error);
             }
 
-            User.findOne(user)
-              .populate("motto")
-              .exec((error, user) => {
-                if (error) {
-                  return next(error);
-                }
-
-                res.json(user);
-              });
+            res.json(user);
           });
-        })
       });
-    }
+    })
   });
 }
 
@@ -115,9 +97,13 @@ function update(req, res, next) {
   const allowed = ["email", "handle", "password"];
   const findBy = { handle: req.params.handle };
   const updateProperties = params.createUpdateObject(allowed, req.body);
-  const returnNew = { new: true };
+  const options = {
+    context: "query", // Needed to run uniqueValidator on update.
+    new: true,
+    runValidators: true // Needed to run uniqueValidator on update.
+  };
 
-  User.findOneAndUpdate(findBy, updateProperties, returnNew,
+  User.findOneAndUpdate(findBy, updateProperties, options,
     (error, user) => {
       if (!user) {
         let error = new Error("User not found.");
