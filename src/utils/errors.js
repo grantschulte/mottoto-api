@@ -32,6 +32,13 @@ function globalErrorHandler(error, req, res, next) {
       };
       break;
 
+    case 401:
+      response = {
+        message: error.message,
+        status: error.status
+      };
+      break;
+
     case 409:
       response = {
         message: error.message,

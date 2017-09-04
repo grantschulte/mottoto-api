@@ -3,6 +3,7 @@ const router = app.Router();
 
 const users = require("./users");
 const mottos = require("./mottos");
+const auth = require("./auth");
 
 /*
  * Users
@@ -24,6 +25,14 @@ router.get("/mottos/:id", mottos.get);
 router.post("/mottos", mottos.create);
 router.put("/mottos/:id", mottos.update);
 router.delete("/mottos/:id", mottos.remove);
+
+/*
+ * Auth
+ */
+
+router.post("/auth/login", auth.login);
+router.post("/auth/logout", auth.logout);
+router.post("/auth/refresh", auth.refresh);
 
 /*
  * Catch All
