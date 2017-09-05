@@ -18,7 +18,7 @@ const seed = new Promise((resolve, reject) => {
   let user = new User({
     email: "picard@enterprise.com",
     handle: "cptPicard",
-    password: "risa"
+    password: "password"
   });
 
   user.save((error, user) => {
@@ -36,7 +36,15 @@ const seed = new Promise((resolve, reject) => {
         reject(error);
       }
 
-      resolve("Database seeding complete.");
+      user.motto = motto._id;
+
+      user.save((error, user) => {
+        if (error) {
+          reject(error);
+        }
+
+        resolve("Database seeding complete.");
+      });
     });
   });
 });
