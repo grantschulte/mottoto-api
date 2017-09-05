@@ -26,6 +26,8 @@ const seed = new Promise((resolve, reject) => {
       reject(error);
     }
 
+    console.log("USER----", user);
+
     let motto = new Motto({
       text: "These are the voyages of the starship Enterprise. It's continuing mission—to explore strange new worlds.",
       user: user._id
