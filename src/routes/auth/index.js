@@ -16,6 +16,8 @@ function create(req, res, next) {
 
   user.save((error, user) => {
     if (error) {
+      let error = new Error("Something went wrong with your sign up attempt. Try again later.");
+      error.status = 500;
       return next(error);
     }
 
@@ -70,7 +72,7 @@ function login(req, res, next) {
     .exec((error, user) => {
       if (!user) {
         let error = new Error("That username and password combination did not work.");
-        error.status = 404;
+        error.status = 401;
         return next(error);
       }
 

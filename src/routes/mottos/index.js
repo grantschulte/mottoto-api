@@ -61,12 +61,21 @@ function create(req, res, next) {
 
 function update(req, res, next) {
   const allowed = ["text"];
-  const findBy = { id: req.body.id };
+  const options = { new: true };
+  const user = req.decoded._id;
   const updateProperties = params.createUpdateObject(allowed, req.body);
-  const returnNew = { new: true };
 
-  Motto.findOneAndUpdate(findBy, updateProperties, returnNew,
-    (error, motto) => {
+  console.log("UPDATE MOTTO");
+
+  if (!user) {
+    let error = new Error("Not authorized to update motto.");
+    error.status = 401;
+    return next(error);
+  }
+
+  Motto.findOneAndUpdate({ user }, updateProperties, options)
+    .select("_id text user")
+    .exec((error, motto) => {
       if (!motto) {
         let error = new Error("Motto not found.");
         error.status = 404;

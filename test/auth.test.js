@@ -40,6 +40,8 @@ describe("Auth", () => {
           res.body.should.have.property("handle").eql("cptPicard");
           res.body.should.have.property("motto");
           res.body.motto.should.have.property("text").eql("");
+          res.body.motto.should.have.property("user");
+          res.body.motto.should.have.property("_id");
           res.body.should.have.property("token");
           expect(res.body.token).to.be.a.jwt;
           expect(res.body.token).to.be.signedWith(process.env.SECRET);
@@ -80,6 +82,8 @@ describe("Auth", () => {
                 res.body.should.have.property("handle").eql("cptPicard");
                 res.body.should.have.property("motto");
                 res.body.motto.should.have.property("text").eql("");
+                res.body.motto.should.have.property("user");
+                res.body.motto.should.have.property("_id");
                 res.body.should.have.property("token");
                 expect(res.body.token).to.be.a.jwt;
                 expect(res.body.token).to.be.signedWith(process.env.SECRET);

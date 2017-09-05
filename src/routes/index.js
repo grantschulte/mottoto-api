@@ -41,4 +41,8 @@ apiRoutes.use(authUtils.checkForAccessToken);
 apiRoutes.put("/users", users.update);
 apiRoutes.delete("/users", users.remove);
 
+// Mottos
+
+apiRoutes.put("/mottos", mottos.update);
+
 module.exports = { routes, apiRoutes };

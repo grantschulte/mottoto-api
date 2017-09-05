@@ -5,9 +5,10 @@ function getCleanUser(user) {
     return null;
   }
 
-  let { email, handle } = user;
+  let { email, handle, _id } = user;
 
   return {
+    _id,
     email,
     handle
   };
