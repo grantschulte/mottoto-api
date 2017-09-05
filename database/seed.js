@@ -5,8 +5,8 @@ const User = require("../src/routes/users/model");
 const Motto = require("../src/routes/mottos/model");
 
 db.on("connected", () => {
-  seed.then((message, user) => {
-      console.log(message, user);
+  seed.then((message) => {
+      console.log(message);
       db.close();
     })
     .catch((error) => {
@@ -31,8 +31,6 @@ const seed = new Promise((resolve, reject) => {
       user: user._id
     });
 
-    console.log("USER ID", user._id);
-
     motto.save((error, motto) => {
       if (error) {
         reject(error);
@@ -40,15 +38,11 @@ const seed = new Promise((resolve, reject) => {
 
       user.motto = motto._id;
 
-      console.log("MOTTO ID", motto._id);
-
       user.save((error, user) => {
-        console.log("USA", user);
-
         if (error) {
           reject(error);
         } else {
-          resolve("Database seeding complete.", user);
+          resolve("Database seeding complete.");
         }
       });
     });
