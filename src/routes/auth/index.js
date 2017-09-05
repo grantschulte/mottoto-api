@@ -69,7 +69,7 @@ function login(req, res, next) {
     .populate("motto")
     .exec((error, user) => {
       if (!user) {
-        let error = new Error("User not found.");
+        let error = new Error("That username and password combination did not work.");
         error.status = 404;
         return next(error);
       }
@@ -85,7 +85,7 @@ function login(req, res, next) {
           const authUserResponse = authUtils.getAuthUserResponse(user, token);
           res.json(authUserResponse);
         } else {
-          let error = new Error("Username or password does not match.");
+          let error = new Error("That username and password combination did not work.");
           error.status = 401;
           return next(error);
         }

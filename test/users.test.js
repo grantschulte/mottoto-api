@@ -53,7 +53,7 @@ describe("Users", () => {
               .end((error, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a("object");
-                res.body.should.have.property("id");
+                res.body.should.have.property("_id");
                 res.body.should.have.property("email").eql("locutis@borg.com");
                 res.body.should.have.property("handle").eql("locutisOfBorg");
                 res.body.should.have.property("motto");
