@@ -65,8 +65,6 @@ function update(req, res, next) {
   const user = req.decoded._id;
   const updateProperties = params.createUpdateObject(allowed, req.body);
 
-  console.log("UPDATE MOTTO");
-
   if (!user) {
     let error = new Error("Not authorized to update motto.");
     error.status = 401;

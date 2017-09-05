@@ -104,7 +104,7 @@ function update(req, res, next) {
   const updateProperties = params.createUpdateObject(allowed, req.body);
 
   User.findOneAndUpdate({ handle }, updateProperties, options)
-    .populate("motto")
+    .populate("motto", "_id text user")
     .exec((error, user) => {
     if (!user) {
       let error = new Error("User not found.");
