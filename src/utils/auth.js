@@ -19,14 +19,14 @@ function getAuthUserResponse(user, token) {
   }
 
   let {
-    id,
+    _id,
     email,
     handle,
     motto
   } = user;
 
   return {
-    id,
+    _id,
     email,
     handle,
     motto,

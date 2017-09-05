@@ -59,7 +59,6 @@ function create(req, res, next) {
     }
 
     let motto = new Motto({
-      _id: new mongoose.Types.ObjectId(),
       text: "",
       user: user._id
     });

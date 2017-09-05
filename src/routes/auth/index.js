@@ -22,7 +22,6 @@ function create(req, res, next) {
     // Create an empty motto for the user.
 
     let motto = new Motto({
-      _id: new mongoose.Types.ObjectId(),
       text: "",
       user: user._id
     });
