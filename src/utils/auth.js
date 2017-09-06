@@ -60,9 +60,51 @@ function checkForAccessToken(req, res, next) {
   }
 }
 
+function handleRequestErrors(requestError) {
+  let message;
+  let error;
+
+  switch (requestError.name) {
+    case "ValidationError":
+      message = getValidationErrorMessage(requestError.errors);
+      error = new Error(message);
+      error.status = 422;
+      break;
+
+    default:
+      message = "There was something wrong with your input. Try again.";
+      error = new Error(message);
+      error.status = 422;
+  }
+
+  return error;
+}
+
+function getValidationErrorMessage(requestErrors) {
+  let message = "";
+
+  for (let p in requestErrors) {
+    switch(requestErrors[p].kind) {
+      case "unique":
+        message += `${requestErrors[p].path} has already been used.\n`;
+        break;
+
+      case "required":
+        message += `${requestErrors[p].path} is required.\n`;
+        break;
+
+      default:
+        message += `${requestErrors[p].path} has errors.\n`;
+    }
+  }
+
+  return message;
+}
+
 module.exports = {
   checkForAccessToken,
   createToken,
   getAuthUserResponse,
-  getCleanUser
+  getCleanUser,
+  handleRequestErrors
 };

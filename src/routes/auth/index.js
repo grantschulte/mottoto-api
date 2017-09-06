@@ -16,9 +16,8 @@ function create(req, res, next) {
 
   user.save((error, user) => {
     if (error) {
-      let error = new Error("Something went wrong with your sign up attempt. Try again later.");
-      error.status = 500;
-      return next(error);
+      let validationError = authUtils.handleRequestErrors(error);
+      return next(validationError);
     }
 
     // Create an empty motto for the user.
@@ -71,7 +70,7 @@ function login(req, res, next) {
     .populate("motto")
     .exec((error, user) => {
       if (!user) {
-        let error = new Error("That username and password combination did not work.");
+        let error = new Error("The provided username and password combination failed.");
         error.status = 401;
         return next(error);
       }
@@ -87,7 +86,7 @@ function login(req, res, next) {
           const authUserResponse = authUtils.getAuthUserResponse(user, token);
           res.json(authUserResponse);
         } else {
-          let error = new Error("That username and password combination did not work.");
+          let error = new Error("The provided username and password combination failed.");
           error.status = 401;
           return next(error);
         }

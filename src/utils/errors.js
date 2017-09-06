@@ -53,6 +53,13 @@ function globalErrorHandler(error, req, res, next) {
       };
       break;
 
+    case 422:
+      response = {
+        message: error.message,
+        status: error.status
+      };
+      break;
+
     case 500:
       response = error;
       break;
