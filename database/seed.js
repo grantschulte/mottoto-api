@@ -21,10 +21,10 @@ const seed = new Promise((resolve, reject) => {
     password: "password"
   });
 
-  User.findOne(user, (error, user) => {
+  User.findOne({ email: user.email }, (error, foundUser) => {
     if (error) {
       reject(error);
-    } else if (user) {
+    } else if (foundUser) {
       resolve("User already seeded.");
     } else {
       user.save((error, user) => {
