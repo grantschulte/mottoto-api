@@ -16,7 +16,7 @@ function create(req, res, next) {
 
   user.save((error, user) => {
     if (error) {
-      let validationError = authUtils.handleRequestErrors(error);
+      const validationError = authUtils.handleRequestErrors(error);
       return next(validationError);
     }
 
@@ -44,7 +44,7 @@ function create(req, res, next) {
         }
 
         User.findOne(user)
-          .populate("motto")
+          .populate("motto", "_id text user")
           .exec((error, user) => {
             if (error) {
               return next(error);
@@ -67,7 +67,7 @@ function create(req, res, next) {
 
 function login(req, res, next) {
   User.findOne({ email: req.body.email })
-    .populate("motto")
+    .populate("motto", "_id text user")
     .exec((error, user) => {
       if (!user) {
         let error = new Error("The provided username and password combination failed.");

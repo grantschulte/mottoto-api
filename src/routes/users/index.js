@@ -94,32 +94,39 @@ function create(req, res, next) {
  */
 
 function update(req, res, next) {
-  const allowed = ["email", "handle", "password"];
+  const allowed = ["email", "handle"];
   const options = {
     context: "query", // Needed to run uniqueValidator on update.
     new: true,
     runValidators: true // Needed to run uniqueValidator on update.
   };
-  const handle = req.decoded.handle;
+  const _id = req.decoded._id;
   const updateProperties = params.createUpdateObject(allowed, req.body);
 
-  User.findOneAndUpdate({ handle }, updateProperties, options)
-    .populate("motto", "_id text user")
-    .exec((error, user) => {
-    if (!user) {
-      let error = new Error("User not found.");
-      error.status = 404;
-      return next(error);
-    }
-
+  User.findOne({ _id }, updateProperties, options, (error, user) => {
     if (error) {
-      return next(error);
+      const validationError = authUtils.handleRequestErrors(error);
+      return next(validationError);
     }
 
-    const cleanUser = authUtils.getCleanUser(user);
-    const token = authUtils.createToken(cleanUser);
-    const authUserResponse = authUtils.getAuthUserResponse(user, token);
-    res.json(authUserResponse);
+    user.password = req.body.password ? req.body.password : user.password;
+    user.handle = req.body.handle ? req.body.handle : user.handle;
+    user.email = req.body.email ? req.body.email : user.email;
+
+    user.save((error, user) => {
+      if (error) {
+        return next(error);
+      }
+
+      User.findOne(user)
+        .populate("motto", "_id text user")
+        .exec((error, user) => {
+          const cleanUser = authUtils.getCleanUser(user);
+          const token = authUtils.createToken(cleanUser);
+          const authUserResponse = authUtils.getAuthUserResponse(user, token);
+          res.json(authUserResponse);
+        });
+    });
   });
 }
 

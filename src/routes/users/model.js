@@ -53,6 +53,33 @@ userSchema.pre("save", function(next) {
   });
 });
 
+userSchema.pre("update", function(next) {
+  let user = this;
+
+  if (!user.isModified("password")) {
+    return next();
+  }
+
+  bcrypt.genSalt(10, (error, salt) => {
+    if (error) {
+      return next(error);
+    }
+
+    bcrypt.hash(user.password, salt, (error, hash) => {
+      if (error) {
+        return next();
+      }
+
+      user.password = hash;
+      next();
+    });
+  });
+});
+
+// function hashPassword(next) {
+//
+// }
+
 // Compare password
 
 userSchema.methods.comparePassword = function(candidatePassword, cb) {
