@@ -21,32 +21,40 @@ const seed = new Promise((resolve, reject) => {
     password: "password"
   });
 
-  user.save((error, user) => {
+  User.findOne(user, (error, user) => {
     if (error) {
       reject(error);
-    }
-
-    console.log("USER----", user);
-
-    let motto = new Motto({
-      text: "These are the voyages of the starship Enterprise. It's continuing mission—to explore strange new worlds.",
-      user: user._id
-    });
-
-    motto.save((error, motto) => {
-      if (error) {
-        reject(error);
-      }
-
-      user.motto = motto._id;
-
+    } else if (user) {
+      resolve("User already seeded.");
+    } else {
       user.save((error, user) => {
         if (error) {
           reject(error);
-        } else {
-          resolve("Database seeding complete.");
         }
+
+        console.log("USER----", user);
+
+        let motto = new Motto({
+          text: "These are the voyages of the starship Enterprise. It's continuing mission—to explore strange new worlds.",
+          user: user._id
+        });
+
+        motto.save((error, motto) => {
+          if (error) {
+            reject(error);
+          }
+
+          user.motto = motto._id;
+
+          user.save((error, user) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve("Database seeding complete.");
+            }
+          });
+        });
       });
-    });
+    }
   });
 });

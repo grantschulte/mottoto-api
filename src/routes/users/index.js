@@ -115,7 +115,8 @@ function update(req, res, next) {
 
     user.save((error, user) => {
       if (error) {
-        return next(error);
+        const validationError = authUtils.handleRequestErrors(error);
+        return next(validationError);
       }
 
       User.findOne(user)
