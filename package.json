@@ -30,7 +30,7 @@
     "db:seed": "node ./database/seed.js",
     "deploy:staging": "git push staging master",
     "lint": "jshint --reporter=node_modules/jshint-stylish ./src/**/*.js",
-    "postinstall": "yarn db:seed",
+    "postinstall": "npm run db:seed",
     "start": "nf start",
     "test": "mocha --timeout 10000"
   },
