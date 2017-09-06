@@ -93,6 +93,10 @@ function getValidationErrorMessage(requestErrors) {
         message += `${requestErrors[p].path} is required.\n`;
         break;
 
+      case "minlength":
+        message += `${requestErrors[p].path} is not long enough.\n`;
+        break;
+        
       default:
         message += `${requestErrors[p].path} has errors.\n`;
     }

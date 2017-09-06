@@ -30,7 +30,7 @@ describe("Users", () => {
       let user = new User({
         email: "picard@enterprise.com",
         handle: "cptPicard",
-        password: "risa"
+        password: "risa99"
       });
 
       user.save((error, user) => {
@@ -49,7 +49,11 @@ describe("Users", () => {
             chai.request(server)
               .put(`/api/users`)
               .set("x-access-token", token)
-              .send({ email: "locutis@borg.com", handle: "locutisOfBorg", password: "risa" })
+              .send({
+                email: "locutis@borg.com",
+                handle: "locutisOfBorg",
+                password: "risa99"
+              })
               .end((error, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a("object");
@@ -75,7 +79,7 @@ describe("Users", () => {
       let user = new User({
         email: "picard@enterprise.com",
         handle: "cptPicard",
-        password: "risa"
+        password: "risa99"
       });
 
       user.save((error, user) => {

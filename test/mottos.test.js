@@ -24,7 +24,7 @@ describe("Mottos", () => {
       let user = new User({
         email: "picard@enterprise.com",
         handle: "cptPicard",
-        password: "risa"
+        password: "risa99"
       });
 
       user.save((error, user) => {

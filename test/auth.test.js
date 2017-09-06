@@ -30,7 +30,7 @@ describe("Auth", () => {
         .send({
           email: "picard@enterprise.com",
           handle: "cptPicard",
-          password: "risa"
+          password: "risa99"
         })
         .end((error, res) => {
           res.should.have.status(200);
@@ -55,7 +55,7 @@ describe("Auth", () => {
       let user = new User({
         email: "picard@enterprise.com",
         handle: "cptPicard",
-        password: "risa"
+        password: "risa99"
       });
 
       user.save((error, user) => {
@@ -72,7 +72,7 @@ describe("Auth", () => {
               .post(`/auth/login`)
               .send({
                 email: "picard@enterprise.com",
-                password: "risa"
+                password: "risa99"
               })
               .end((error, res) => {
                 res.should.have.status(200);
