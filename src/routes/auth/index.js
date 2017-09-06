@@ -96,11 +96,28 @@ function login(req, res, next) {
 }
 
 /*
- * Refresh
+ * Me From Token
  */
 
-function refresh(req, res, next) {
+function meFromToken(req, res, next) {
+  User.findOne({ _id: req.decoded._id })
+  .populate("motto", "_id text user")
+  .exec((error, user) => {
+    if (!user) {
+      let error = new Error("User not found.");
+      error.status = 401;
+      return next(error);
+    }
 
+    if (error) {
+      return next(error);
+    }
+
+    const cleanUser = authUtils.getCleanUser(user);
+    const token = authUtils.createToken(cleanUser);
+    const authUserResponse = authUtils.getAuthUserResponse(user, token);
+    res.json(authUserResponse);
+  });
 }
 
-module.exports = { create, login, refresh };
+module.exports = { create, login, meFromToken };

@@ -43,7 +43,7 @@ function createToken(cleanUser) {
 
 function checkForAccessToken(req, res, next) {
   const token = req.body.token || req.query.token || req.headers["x-access-token"];
-
+  
   if (token) {
     jwt.verify(token, process.env.SECRET, (error, decoded) => {
       if (error) {
@@ -96,7 +96,7 @@ function getValidationErrorMessage(requestErrors) {
       case "minlength":
         message += `${requestErrors[p].path} is not long enough.\n`;
         break;
-        
+
       default:
         message += `${requestErrors[p].path} has errors.\n`;
     }

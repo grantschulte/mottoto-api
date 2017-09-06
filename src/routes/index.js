@@ -21,7 +21,7 @@ routes.get("/", (req, res, next) => {
 
 routes.post("/auth/create", auth.create);
 routes.post("/auth/login", auth.login);
-routes.post("/auth/refresh", auth.refresh);
+routes.get("/auth/me/from/token", authUtils.checkForAccessToken, auth.meFromToken);
 
 // Authors
 

@@ -94,4 +94,48 @@ describe("Auth", () => {
       });
     });
   });
+
+  describe("GET user from token", () => {
+    it("It should retrieve a user from a jwt token", done => {
+      let user = new User({
+        email: "picard@enterprise.com",
+        handle: "cptPicard",
+        password: "risa99"
+      });
+
+      user.save((error, user) => {
+        let motto = new Motto({
+          text: "",
+          user: user._id
+        });
+
+        motto.save((error, motto) => {
+          user.motto = motto._id;
+
+          user.save((error, user) => {
+            const cleanUser = authUtils.getCleanUser(user);
+            const token = authUtils.createToken(cleanUser);
+
+            chai.request(server)
+              .get(`/auth/me/from/token?token=${token}`)
+              .end((error, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a("object");
+                res.body.should.have.property("_id");
+                res.body.should.have.property("email").eql("picard@enterprise.com");
+                res.body.should.have.property("handle").eql("cptPicard");
+                res.body.should.have.property("motto");
+                res.body.motto.should.have.property("text").eql("");
+                res.body.motto.should.have.property("user");
+                res.body.motto.should.have.property("_id");
+                res.body.should.have.property("token");
+                expect(res.body.token).to.be.a.jwt;
+                expect(res.body.token).to.be.signedWith(process.env.SECRET);
+                done();
+              });
+          });
+        });
+      });
+    });
+  });
 });
